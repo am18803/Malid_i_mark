@@ -56,6 +56,24 @@ The script works in three steps for each exercise:
 
 **3. Score** — clicks the check button (`#ScoreBar-checkButton`). For drag-drop types where the check handler crashes (because our JS-created elements aren't jQuery UI draggables), the fill script writes the score directly to `#ScoreBar-score` instead.
 
+## Screenshots
+
+After each exercise the script takes a full-page screenshot and saves it automatically. When you run the script it asks where to save them:
+
+```
+  Where to save screenshots?
+  Press Enter for default: /home/<you>/Desktop/app/screenshots/<Section name>
+  Save to:
+```
+
+Press **Enter** to use the default folder, or type a custom path. Screenshots are named like:
+
+```
+Fallorð__Verkefni_1__100_0%.png
+```
+
+You can browse all screenshots in your file manager or any image viewer.
+
 ## Results
 
 | Section | Exercises | Typical average |
@@ -65,3 +83,15 @@ The script works in three steps for each exercise:
 | Sagnorð | 79 | ~95%+ |
 
 One exercise (Blönduð verkefni / Verkefni 8 in Óbeygjanleg orð) has a design ceiling of 68.8% because 5 of 16 answer slots are pre-filled by the site but still counted in the denominator.
+
+## License
+
+MIT License
+
+Copyright (c) 2025 am18803
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
