@@ -5,6 +5,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
@@ -20,10 +23,6 @@ jobs:
         run: |
           pip install playwright==1.58.0 pyinstaller
 
-      - name: Collect Playwright data for PyInstaller
-        run: |
-          pip show playwright
-
       - name: Build EXE
         run: |
           pyinstaller `
@@ -33,9 +32,23 @@ jobs:
             --collect-all playwright `
             mms_autosolver.py
 
-      - name: Upload EXE as artifact
-        uses: actions/upload-artifact@v4
+      - name: Create or update GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: mms-autosolver-windows
-          path: dist/mms_autosolver.exe
-          retention-days: 30
+          tag_name: latest
+          name: "MMS Auto-Solver — Latest Build"
+          body: |
+            ## MMS Málið í Mark — Auto-Solver
+
+            **Download `mms_autosolver.exe` below and double-click to run.**
+
+            On first launch it will download Chromium (~150 MB) automatically.
+            After that it opens a browser and solves all exercises.
+
+            ### Sections
+            - `1` — Fallorð (67 exercises)
+            - `2` — Sagnorð (79 exercises)
+            - `3` — Óbeygjanleg orð (53 exercises)
+          files: dist/mms_autosolver.exe
+          make_latest: true
+          prerelease: false
