@@ -10,7 +10,9 @@ Run with: ~/pwenv/bin/python3 mms_autosolver.py
 """
 
 import asyncio
+import re
 import sys
+from pathlib import Path
 from playwright.async_api import async_playwright
 
 # ── Exercise lists ────────────────────────────────────────────────────────────
@@ -580,7 +582,15 @@ def get_fill_script(data_fun: str, data_path: str) -> str:
 
 # ── Core solver ───────────────────────────────────────────────────────────────
 
-async def solve_exercise(page, category: str, name: str, data_fun: str, data_path: str) -> str:
+def _screenshot_path(screenshot_dir: Path, category: str, name: str, score: str) -> Path:
+    """Build a safe filename: e.g. 'Forsetningar_Verkefni_3_100.png'"""
+    safe = re.sub(r"[^\w\s-]", "", f"{category}_{name}_{score}").strip()
+    safe = re.sub(r"\s+", "_", safe)
+    return screenshot_dir / f"{safe}.png"
+
+
+async def solve_exercise(page, category: str, name: str, data_fun: str,
+                         data_path: str, screenshot_dir: Path) -> str:
     print(f"  [{data_fun:12s}] {category} / {name} ...", end=" ", flush=True)
 
     await page.evaluate(f"""() => {{
@@ -608,22 +618,36 @@ async def solve_exercise(page, category: str, name: str, data_fun: str, data_pat
 
     score = (await page.locator("#ScoreBar-score").text_content() or "?").strip()
     print(score)
+
+    # Screenshot: scroll Assignment into view, wait for paint, then capture
+    await page.evaluate("document.getElementById('Assignment').scrollIntoView({block:'start'})")
+    await page.wait_for_timeout(300)
+    shot_path = _screenshot_path(screenshot_dir, category, name, score)
+    await page.screenshot(path=str(shot_path), full_page=True)
+
     return score
 
 
-async def run_section(section_name: str, base_url: str, exercises: list):
+async def run_section(section_name: str, base_url: str, exercises: list, screenshot_dir: Path):
     print(f"\n{'=' * 65}")
     print(f"  MMS Málið í Mark — {section_name}")
     print(f"  {base_url}")
     print(f"{'=' * 65}")
 
+    screenshot_dir.mkdir(parents=True, exist_ok=True)
+    print(f"\nScreenshots → {screenshot_dir}/")
+
     results = []
 
     async with async_playwright() as pw:
-        browser = await pw.chromium.launch(headless=False, args=["--no-sandbox"])
-        page = await (await browser.new_context()).new_page()
+        browser = await pw.chromium.launch(
+            headless=False,
+            args=["--no-sandbox"],
+        )
+        context = await browser.new_context(viewport={"width": 1280, "height": 900})
+        page = await context.new_page()
 
-        print("\nLoading page...")
+        print("Loading page...")
         await page.goto(base_url, wait_until="networkidle")
         await page.wait_for_timeout(2000)
         print("Page loaded.\n")
@@ -633,7 +657,8 @@ async def run_section(section_name: str, base_url: str, exercises: list):
             if category != prev_category:
                 print(f"\n── {category} ──")
                 prev_category = category
-            score = await solve_exercise(page, category, name, data_fun, data_path)
+            score = await solve_exercise(page, category, name, data_fun,
+                                         data_path, screenshot_dir)
             results.append((category, name, data_fun, score))
 
         await browser.close()
@@ -677,7 +702,14 @@ def main():
         sys.exit(1)
 
     section_name, base_url, exercises = SECTIONS[choice]
-    asyncio.run(run_section(section_name, base_url, exercises))
+
+    default_dir = str(Path.home() / "Desktop" / "app" / "screenshots" / re.sub(r"[^\w]", "_", section_name))
+    print(f"\n  Where to save screenshots?")
+    print(f"  Press Enter for default: {default_dir}")
+    save_input = input("  Save to: ").strip()
+    save_dir = Path(save_input) if save_input else Path(default_dir)
+
+    asyncio.run(run_section(section_name, base_url, exercises, save_dir))
 
 
 def ensure_browser():
