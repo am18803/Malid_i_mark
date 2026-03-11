@@ -32,6 +32,9 @@ jobs:
             --collect-all playwright `
             mms_autosolver.py
 
+      - name: Zip screenshots
+        run: Compress-Archive -Path screenshots -DestinationPath screenshots.zip
+
       - name: Create or update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -49,6 +52,11 @@ jobs:
             - `1` — Fallorð (67 exercises)
             - `2` — Sagnorð (79 exercises)
             - `3` — Óbeygjanleg orð (53 exercises)
-          files: dist/mms_autosolver.exe
+
+            ### Screenshots
+            Download `screenshots.zip` for all 199 full-page exercise screenshots (one per exercise, showing the filled answers and score).
+          files: |
+            dist/mms_autosolver.exe
+            screenshots.zip
           make_latest: true
           prerelease: false

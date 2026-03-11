@@ -74,6 +74,8 @@ Fallorð__Verkefni_1__100_0%.png
 
 You can browse all screenshots in your file manager or any image viewer.
 
+A zip of all 199 screenshots is also available to download from the [GitHub Releases page](https://github.com/am18803/app/releases) as `screenshots.zip`.
+
 ## Results
 
 | Section | Exercises | Typical average |
