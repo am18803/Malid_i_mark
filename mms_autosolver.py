@@ -6,7 +6,7 @@ Supports all three sections:
   2 – Sagnorð        (https://www1.mms.is/malid/sagnord/)
   3 – Óbeygjanleg orð (https://www1.mms.is/malid/obeygjanleg/)
 
-Run with: /tmp/pwenv/bin/python3 mms_autosolver.py
+Run with: ~/pwenv/bin/python3 mms_autosolver.py
 """
 
 import asyncio
@@ -680,5 +680,17 @@ def main():
     asyncio.run(run_section(section_name, base_url, exercises))
 
 
+def ensure_browser():
+    """Download Chromium on first run (needed when running as a bundled exe)."""
+    import subprocess
+    result = subprocess.run(
+        [sys.executable, "-m", "playwright", "install", "chromium"],
+        capture_output=True, text=True
+    )
+    if result.returncode != 0:
+        print("Warning: browser install may have failed:", result.stderr[:200])
+
+
 if __name__ == "__main__":
+    ensure_browser()
     main()

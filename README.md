@@ -7,15 +7,15 @@ Automatically solves all exercises on [https://www1.mms.is/malid/](https://www1.
 Python 3 with Playwright. If you haven't set it up yet:
 
 ```bash
-python3 -m venv /tmp/pwenv
-/tmp/pwenv/bin/pip install playwright
-/tmp/pwenv/bin/playwright install chromium
+python3 -m venv ~/pwenv
+~/pwenv/bin/pip install playwright
+~/pwenv/bin/playwright install chromium
 ```
 
 ## Running
 
 ```bash
-/tmp/pwenv/bin/python3 mms_autosolver.py
+~/pwenv/bin/python3 mms_autosolver.py
 ```
 
 You will be prompted to pick a section:
